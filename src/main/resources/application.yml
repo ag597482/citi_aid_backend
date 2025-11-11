@@ -1,0 +1,39 @@
+spring:
+  application:
+    name: citi_aid_backend
+
+#  data:
+#    mongodb:
+#      # MongoDB connection URI
+#      uri: mongodb://localhost:27017/citi_aid_db
+#      # if your Mongo has credentials:
+#      # uri: mongodb://username:password@localhost:27017/citi_aid_db?authSource=admin
+
+server:
+  port: 8080
+  error:
+    include-message: always
+    include-binding-errors: always
+
+springdoc:
+  api-docs:
+    path: /api-docs     # default: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui   # default: /swagger-ui.html
+    operations-sorter: method
+    tags-sorter: alpha
+    display-request-duration: true
+    doc-expansion: none
+
+logging:
+  level:
+    root: INFO
+    org.springframework.web: INFO
+    org.mongodb.driver: WARN
+
+## (Optional) custom app-level configs ? you can use in @Value("${app.*}")
+#app:
+#  security:
+#    password-hash-strength: 12
+#  api:
+#    version: v1
