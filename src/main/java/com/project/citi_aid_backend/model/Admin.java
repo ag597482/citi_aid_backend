@@ -1,5 +1,6 @@
 package com.project.citi_aid_backend.model;
 
+import com.project.citi_aid_backend.enums.UserType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,4 +17,9 @@ public class Admin extends User{
     private String id;
     private String name;
     private String password;
+
+    @Override
+    public UserType getUserType() {
+        return UserType.ADMIN;
+    }
 }

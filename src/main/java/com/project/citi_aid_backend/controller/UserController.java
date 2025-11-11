@@ -1,8 +1,14 @@
 package com.project.citi_aid_backend.controller;
 
 import com.project.citi_aid_backend.dto.request.CreateAdminRequest;
+import com.project.citi_aid_backend.dto.request.CreateAgentRequest;
+import com.project.citi_aid_backend.dto.request.CreateCustomerRequest;
 import com.project.citi_aid_backend.model.Admin;
+import com.project.citi_aid_backend.model.Agent;
+import com.project.citi_aid_backend.model.Customer;
 import com.project.citi_aid_backend.service.UserService;
+import com.project.citi_aid_backend.enums.Department;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,8 +23,9 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    // Admin endpoints
     @PostMapping("/createAdmin")
-    public ResponseEntity<Admin> createAdmin(@RequestBody CreateAdminRequest createAdminRequest) {
+    public ResponseEntity<Admin> createAdmin(@Valid @RequestBody CreateAdminRequest createAdminRequest) {
         Admin admin = userService.createAdmin(createAdminRequest);
         return ResponseEntity.status(200).body(admin);
     }
@@ -34,6 +41,66 @@ public class UserController {
     public ResponseEntity<List<Admin>> getAllAdmins() {
         List<Admin> admins = userService.getAllAdmins();
         return ResponseEntity.ok(admins);
+    }
+
+    // Customer endpoints
+    @PostMapping("/createCustomer")
+    public ResponseEntity<Customer> createCustomer(@Valid @RequestBody CreateCustomerRequest createCustomerRequest) {
+        Customer customer = userService.createCustomer(createCustomerRequest);
+        return ResponseEntity.status(200).body(customer);
+    }
+
+    @GetMapping("/customer/name/{name}")
+    public ResponseEntity<Customer> getCustomerByName(@PathVariable String name) {
+        Optional<Customer> customer = userService.getCustomerByName(name);
+        return customer.map(c -> ResponseEntity.ok(c))
+                .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+    }
+
+    @GetMapping("/customer/email/{email}")
+    public ResponseEntity<Customer> getCustomerByEmail(@PathVariable String email) {
+        Optional<Customer> customer = userService.getCustomerByEmail(email);
+        return customer.map(c -> ResponseEntity.ok(c))
+                .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+    }
+
+    @GetMapping("/customers")
+    public ResponseEntity<List<Customer>> getAllCustomers() {
+        List<Customer> customers = userService.getAllCustomers();
+        return ResponseEntity.ok(customers);
+    }
+
+    // Agent endpoints
+    @PostMapping("/createAgent")
+    public ResponseEntity<Agent> createAgent(@Valid @RequestBody CreateAgentRequest createAgentRequest) {
+        Agent agent = userService.createAgent(createAgentRequest);
+        return ResponseEntity.status(200).body(agent);
+    }
+
+    @GetMapping("/agent/name/{name}")
+    public ResponseEntity<Agent> getAgentByName(@PathVariable String name) {
+        Optional<Agent> agent = userService.getAgentByName(name);
+        return agent.map(a -> ResponseEntity.ok(a))
+                .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+    }
+
+    @GetMapping("/agent/phone/{phone}")
+    public ResponseEntity<Agent> getAgentByPhone(@PathVariable String phone) {
+        Optional<Agent> agent = userService.getAgentByPhone(phone);
+        return agent.map(a -> ResponseEntity.ok(a))
+                .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+    }
+
+    @GetMapping("/agents")
+    public ResponseEntity<List<Agent>> getAllAgents() {
+        List<Agent> agents = userService.getAllAgents();
+        return ResponseEntity.ok(agents);
+    }
+
+    @GetMapping("/agents/department/{department}")
+    public ResponseEntity<List<Agent>> getAgentsByDepartment(@PathVariable Department department) {
+        List<Agent> agents = userService.getAgentsByDepartment(department);
+        return ResponseEntity.ok(agents);
     }
 
 }

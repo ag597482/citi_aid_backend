@@ -1,9 +1,16 @@
 package com.project.citi_aid_backend.service.impl;
 
 import com.project.citi_aid_backend.dto.request.CreateAdminRequest;
+import com.project.citi_aid_backend.dto.request.CreateAgentRequest;
+import com.project.citi_aid_backend.dto.request.CreateCustomerRequest;
 import com.project.citi_aid_backend.model.Admin;
+import com.project.citi_aid_backend.model.Agent;
+import com.project.citi_aid_backend.model.Customer;
 import com.project.citi_aid_backend.repository.AdminRepository;
+import com.project.citi_aid_backend.repository.AgentRepository;
+import com.project.citi_aid_backend.repository.CustomerRepository;
 import com.project.citi_aid_backend.service.UserService;
+import com.project.citi_aid_backend.enums.Department;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +23,13 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private AdminRepository adminRepository;
 
+    @Autowired
+    private CustomerRepository customerRepository;
+
+    @Autowired
+    private AgentRepository agentRepository;
+
+    // Admin methods
     @Override
     public Admin createAdmin(CreateAdminRequest createAdminRequest) {
         Admin admin = new Admin();
@@ -32,6 +46,64 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<Admin> getAllAdmins() {
         return adminRepository.findAll();
+    }
+
+    // Customer methods
+    @Override
+    public Customer createCustomer(CreateCustomerRequest createCustomerRequest) {
+        Customer customer = new Customer();
+        customer.setName(createCustomerRequest.getName());
+        customer.setEmail(createCustomerRequest.getEmail());
+        customer.setPhone(createCustomerRequest.getPhone());
+        customer.setPassword(createCustomerRequest.getPassword());
+        return customerRepository.save(customer);
+    }
+
+    @Override
+    public Optional<Customer> getCustomerByName(String name) {
+        return customerRepository.findByName(name);
+    }
+
+    @Override
+    public Optional<Customer> getCustomerByEmail(String email) {
+        return customerRepository.findByEmail(email);
+    }
+
+    @Override
+    public List<Customer> getAllCustomers() {
+        return customerRepository.findAll();
+    }
+
+    // Agent methods
+    @Override
+    public Agent createAgent(CreateAgentRequest createAgentRequest) {
+        Agent agent = new Agent();
+        agent.setName(createAgentRequest.getName());
+        agent.setPhone(createAgentRequest.getPhone());
+        agent.setPassword(createAgentRequest.getPassword());
+        agent.setDocument(createAgentRequest.getDocument());
+        agent.setDepartment(createAgentRequest.getDepartment());
+        return agentRepository.save(agent);
+    }
+
+    @Override
+    public Optional<Agent> getAgentByName(String name) {
+        return agentRepository.findByName(name);
+    }
+
+    @Override
+    public Optional<Agent> getAgentByPhone(String phone) {
+        return agentRepository.findByPhone(phone);
+    }
+
+    @Override
+    public List<Agent> getAllAgents() {
+        return agentRepository.findAll();
+    }
+
+    @Override
+    public List<Agent> getAgentsByDepartment(Department department) {
+        return agentRepository.findByDepartment(department);
     }
 }
 
