@@ -1,13 +1,9 @@
 spring:
   application:
     name: citi_aid_backend
-
-#  data:
-#    mongodb:
-#      # MongoDB connection URI
-#      uri: mongodb://localhost:27017/citi_aid_db
-#      # if your Mongo has credentials:
-#      # uri: mongodb://username:password@localhost:27017/citi_aid_db?authSource=admin
+  data:
+    mongodb:
+      uri: mongodb+srv://citi_aid:yojitSiddhant@citi-aid.j6pmitp.mongodb.net/citi_aid
 
 server:
   port: 8080
@@ -30,10 +26,3 @@ logging:
     root: INFO
     org.springframework.web: INFO
     org.mongodb.driver: WARN
-
-## (Optional) custom app-level configs ? you can use in @Value("${app.*}")
-#app:
-#  security:
-#    password-hash-strength: 12
-#  api:
-#    version: v1

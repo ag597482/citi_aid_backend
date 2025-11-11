@@ -1,6 +1,5 @@
 package com.project.citi_aid_backend;
 
-import com.project.citi_aid_backend.model.Admin;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
