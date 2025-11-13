@@ -18,13 +18,14 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
+@RequestMapping("/user")
 public class UserController {
 
     @Autowired
     private UserService userService;
 
     // Admin endpoints
-    @PostMapping("/createAdmin")
+    @PostMapping("/admin/create")
     public ResponseEntity<Admin> createAdmin(@Valid @RequestBody CreateAdminRequest createAdminRequest) {
         Admin admin = userService.createAdmin(createAdminRequest);
         return ResponseEntity.status(200).body(admin);
@@ -33,7 +34,7 @@ public class UserController {
     @GetMapping("/admin/{name}")
     public ResponseEntity<Admin> getAdminByName(@PathVariable String name) {
         Optional<Admin> admin = userService.getAdminByName(name);
-        return admin.map(a -> ResponseEntity.ok(a))
+        return admin.map(ResponseEntity::ok)
                 .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
 
@@ -44,7 +45,7 @@ public class UserController {
     }
 
     // Customer endpoints
-    @PostMapping("/createCustomer")
+    @PostMapping("/customer/create")
     public ResponseEntity<Customer> createCustomer(@Valid @RequestBody CreateCustomerRequest createCustomerRequest) {
         Customer customer = userService.createCustomer(createCustomerRequest);
         return ResponseEntity.status(200).body(customer);
@@ -71,7 +72,7 @@ public class UserController {
     }
 
     // Agent endpoints
-    @PostMapping("/createAgent")
+    @PostMapping("/agent/create")
     public ResponseEntity<Agent> createAgent(@Valid @RequestBody CreateAgentRequest createAgentRequest) {
         Agent agent = userService.createAgent(createAgentRequest);
         return ResponseEntity.status(200).body(agent);

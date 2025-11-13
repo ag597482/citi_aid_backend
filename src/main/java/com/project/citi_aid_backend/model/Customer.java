@@ -22,6 +22,6 @@ public class Customer extends User{
 
     @Override
     public UserType getUserType() {
-        return UserType.ADMIN;
+        return UserType.CUSTOMER;
     }
 }
