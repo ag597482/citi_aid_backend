@@ -20,6 +20,10 @@ springdoc:
     tags-sorter: alpha
     display-request-duration: true
     doc-expansion: none
+    try-it-out-enabled: true
+    filter: true
+  cors:
+    enabled: true
 
 logging:
   level:
