@@ -3,7 +3,17 @@ spring:
     name: citi_aid_backend
   data:
     mongodb:
-      uri: mongodb+srv://citi_aid:yojitSiddhant@citi-aid.j6pmitp.mongodb.net/citi_aid
+      uri: mongodb://mongo:PqPwuufLGIVTZvXAWiANMNcgsNsZkraf@centerbeam.proxy.rlwy.net:39499/citi_aid?authSource=admin
+#      mongodb+srv://citi_aid:yojitSiddhant@citi-aid.j6pmitp.mongodb.net/citi_aid
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+app:
+  image:
+    storage:
+      path: target/images
 
 server:
   port: 8080

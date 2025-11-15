@@ -25,5 +25,8 @@ public class CreateComplaintRequest {
 
     @NotNull(message = "Severity is required")
     private Severity severity;
+
+    @NotBlank(message = "Customer ID is required")
+    private String customerId;
 }
 

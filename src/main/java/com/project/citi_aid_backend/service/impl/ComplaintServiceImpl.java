@@ -4,8 +4,10 @@ import com.project.citi_aid_backend.dto.request.CreateComplaintRequest;
 import com.project.citi_aid_backend.dto.request.UpdateComplaintRequest;
 import com.project.citi_aid_backend.model.Agent;
 import com.project.citi_aid_backend.model.Complaint;
+import com.project.citi_aid_backend.model.Customer;
 import com.project.citi_aid_backend.repository.AgentRepository;
 import com.project.citi_aid_backend.repository.ComplaintRepository;
+import com.project.citi_aid_backend.repository.CustomerRepository;
 import com.project.citi_aid_backend.service.ComplaintService;
 import com.project.citi_aid_backend.enums.Department;
 import com.project.citi_aid_backend.enums.Severity;
@@ -26,8 +28,17 @@ public class ComplaintServiceImpl implements ComplaintService {
     @Autowired
     private AgentRepository agentRepository;
 
+    @Autowired
+    private CustomerRepository customerRepository;
+
     @Override
     public Complaint createComplaint(CreateComplaintRequest createComplaintRequest) {
+        // Find the customer who created the complaint
+        Optional<Customer> customerOpt = customerRepository.findById(createComplaintRequest.getCustomerId());
+        if (customerOpt.isEmpty()) {
+            throw new RuntimeException("Customer not found with id: " + createComplaintRequest.getCustomerId());
+        }
+
         Complaint complaint = new Complaint();
         complaint.setTitle(createComplaintRequest.getTitle());
         complaint.setDescription(createComplaintRequest.getDescription());
@@ -36,6 +47,7 @@ public class ComplaintServiceImpl implements ComplaintService {
         complaint.setDepartment(createComplaintRequest.getDepartment());
         complaint.setSeverity(createComplaintRequest.getSeverity());
         complaint.setStatus(Status.RAISED);
+        complaint.setCustomer(customerOpt.get());
         complaint.setCreatedAt(LocalDateTime.now());
         return complaintRepository.save(complaint);
     }

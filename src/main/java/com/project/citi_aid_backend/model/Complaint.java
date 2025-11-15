@@ -32,6 +32,9 @@ public class Complaint {
     @DBRef
     private Agent agent;
     
+    @DBRef
+    private Customer customer;
+    
     private LocalDateTime createdAt;
     private LocalDateTime assignedAt;
     private LocalDateTime completedAt;
