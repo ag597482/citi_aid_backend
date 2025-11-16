@@ -83,6 +83,11 @@ public class ComplaintServiceImpl implements ComplaintService {
     }
 
     @Override
+    public List<Complaint> getComplaintsByCustomerId(String customerId) {
+        return complaintRepository.findByCustomerId(customerId);
+    }
+
+    @Override
     public Complaint updateComplaint(String id, UpdateComplaintRequest updateComplaintRequest) {
         Optional<Complaint> optionalComplaint = complaintRepository.findById(id);
         if (optionalComplaint.isEmpty()) {

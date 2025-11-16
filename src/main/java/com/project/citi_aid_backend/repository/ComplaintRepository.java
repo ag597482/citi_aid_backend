@@ -15,5 +15,6 @@ public interface ComplaintRepository extends MongoRepository<Complaint, String> 
     List<Complaint> findBySeverity(Severity severity);
     List<Complaint> findByStatus(Status status);
     List<Complaint> findByAgentId(String agentId);
+    List<Complaint> findByCustomerId(String customerId);
 }
 

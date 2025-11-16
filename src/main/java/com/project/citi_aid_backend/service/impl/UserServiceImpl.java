@@ -3,12 +3,16 @@ package com.project.citi_aid_backend.service.impl;
 import com.project.citi_aid_backend.dto.request.CreateAdminRequest;
 import com.project.citi_aid_backend.dto.request.CreateAgentRequest;
 import com.project.citi_aid_backend.dto.request.CreateCustomerRequest;
+import com.project.citi_aid_backend.dto.response.CustomerProfile;
+import com.project.citi_aid_backend.enums.Status;
 import com.project.citi_aid_backend.model.Admin;
 import com.project.citi_aid_backend.model.Agent;
+import com.project.citi_aid_backend.model.Complaint;
 import com.project.citi_aid_backend.model.Customer;
 import com.project.citi_aid_backend.repository.AdminRepository;
 import com.project.citi_aid_backend.repository.AgentRepository;
 import com.project.citi_aid_backend.repository.CustomerRepository;
+import com.project.citi_aid_backend.service.ComplaintService;
 import com.project.citi_aid_backend.service.UserService;
 import com.project.citi_aid_backend.enums.Department;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +32,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private AgentRepository agentRepository;
+
+    @Autowired
+    private ComplaintService complaintService;
 
     // Admin methods
     @Override
@@ -72,6 +79,17 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<Customer> getAllCustomers() {
         return customerRepository.findAll();
+    }
+
+    @Override
+    public CustomerProfile getCustomerProfile(String customerId) {
+        Customer customer = customerRepository.findById(customerId).get();
+        List<Complaint> customerComplaints = complaintService.getComplaintsByCustomerId(customerId);
+        CustomerProfile customerProfile = new CustomerProfile();
+        customerProfile.setCustomer(customer);
+        customerProfile.setActiveComplaints(customerComplaints.stream().filter(complaint -> !complaint.getStatus().equals(Status.FIXED)).toList());
+        customerProfile.setClosedComplaints(customerComplaints.stream().filter(complaint -> complaint.getStatus().equals(Status.FIXED)).toList());
+        return customerProfile;
     }
 
     // Agent methods

@@ -2,6 +2,7 @@ package com.project.citi_aid_backend.controller;
 
 import com.project.citi_aid_backend.dto.request.CreateComplaintRequest;
 import com.project.citi_aid_backend.dto.request.UpdateComplaintRequest;
+import com.project.citi_aid_backend.dto.response.DeleteResponse;
 import com.project.citi_aid_backend.model.Complaint;
 import com.project.citi_aid_backend.service.ComplaintService;
 import com.project.citi_aid_backend.enums.Department;
@@ -73,6 +74,13 @@ public class ComplaintController {
         return ResponseEntity.ok(complaints);
     }
 
+    // Read - Get by customer ID
+    @GetMapping("/customer/{customerId}")
+    public ResponseEntity<List<Complaint>> getComplaintsByCustomerId(@PathVariable String customerId) {
+        List<Complaint> complaints = complaintService.getComplaintsByCustomerId(customerId);
+        return ResponseEntity.ok(complaints);
+    }
+
     // Update
     @PutMapping("/{id}")
     public ResponseEntity<Complaint> updateComplaint(
@@ -88,12 +96,14 @@ public class ComplaintController {
 
     // Delete
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteComplaint(@PathVariable String id) {
+    public ResponseEntity<DeleteResponse> deleteComplaint(@PathVariable String id) {
         try {
             complaintService.deleteComplaint(id);
-            return ResponseEntity.noContent().build();
+            DeleteResponse response = new DeleteResponse("Complaint deleted successfully", true);
+            return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            DeleteResponse response = new DeleteResponse("Complaint not found with id: " + id, false);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
     }
 }

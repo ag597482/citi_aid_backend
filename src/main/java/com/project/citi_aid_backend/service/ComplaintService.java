@@ -21,6 +21,7 @@ public interface ComplaintService {
     List<Complaint> getComplaintsBySeverity(Severity severity);
     List<Complaint> getComplaintsByStatus(Status status);
     List<Complaint> getComplaintsByAgentId(String agentId);
+    List<Complaint> getComplaintsByCustomerId(String customerId);
     
     // Update
     Complaint updateComplaint(String id, UpdateComplaintRequest updateComplaintRequest);

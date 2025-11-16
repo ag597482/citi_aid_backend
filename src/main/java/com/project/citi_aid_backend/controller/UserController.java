@@ -3,6 +3,7 @@ package com.project.citi_aid_backend.controller;
 import com.project.citi_aid_backend.dto.request.CreateAdminRequest;
 import com.project.citi_aid_backend.dto.request.CreateAgentRequest;
 import com.project.citi_aid_backend.dto.request.CreateCustomerRequest;
+import com.project.citi_aid_backend.dto.response.CustomerProfile;
 import com.project.citi_aid_backend.model.Admin;
 import com.project.citi_aid_backend.model.Agent;
 import com.project.citi_aid_backend.model.Customer;
@@ -56,6 +57,12 @@ public class UserController {
         Optional<Customer> customer = userService.getCustomerByName(name);
         return customer.map(c -> ResponseEntity.ok(c))
                 .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+    }
+
+    @GetMapping("/customer/profile/{customerId}")
+    public ResponseEntity<CustomerProfile> getCustomerProfile(@PathVariable String customerId) {
+        CustomerProfile customerProfile = userService.getCustomerProfile(customerId);
+        return ResponseEntity.status(200).body(customerProfile);
     }
 
     @GetMapping("/customer/email/{email}")
