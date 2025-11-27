@@ -21,6 +21,10 @@ public class Agent extends User {
     private String password;
     private String document; // File path or URL
     private Department department;
+    private int assignedComplaint = 0;
+    private int complaintsInProgress = 0;
+    private int closedComplaints = 0;
+    private String profilePhotoUrl;
 
     @Override
     public UserType getUserType() {

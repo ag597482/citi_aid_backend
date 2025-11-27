@@ -27,6 +27,8 @@ public interface ComplaintService {
     
     // Update
     Complaint updateComplaint(String id, UpdateComplaintRequest updateComplaintRequest);
+    Complaint assignAgentToComplaint(String complaintId, String agentId);
+    Complaint discardComplaint(String complaintId);
     
     // Delete
     void deleteComplaint(String id);

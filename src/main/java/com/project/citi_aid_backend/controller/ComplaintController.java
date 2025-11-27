@@ -101,6 +101,30 @@ public class ComplaintController {
         }
     }
 
+    // Assign Agent
+    @PutMapping("/{complaintId}/assign/{agentId}")
+    public ResponseEntity<Complaint> assignAgentToComplaint(
+            @PathVariable String complaintId,
+            @PathVariable String agentId) {
+        try {
+            Complaint complaint = complaintService.assignAgentToComplaint(complaintId, agentId);
+            return ResponseEntity.ok(complaint);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
+    // Discard Complaint
+    @PutMapping("/{complaintId}/discard")
+    public ResponseEntity<Complaint> discardComplaint(@PathVariable String complaintId) {
+        try {
+            Complaint complaint = complaintService.discardComplaint(complaintId);
+            return ResponseEntity.ok(complaint);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
     // Delete
     @DeleteMapping("/{id}")
     public ResponseEntity<DeleteResponse> deleteComplaint(@PathVariable String id) {

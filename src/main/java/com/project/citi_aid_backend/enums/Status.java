@@ -4,6 +4,7 @@ public enum Status {
     RAISED,
     AGENT_ASSIGNED,
     IN_PROGRESS,
-    FIXED
+    FIXED,
+    DISCARDED
 }
 

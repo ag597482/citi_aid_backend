@@ -163,6 +163,44 @@ public class ComplaintServiceImpl implements ComplaintService {
     }
 
     @Override
+    public Complaint assignAgentToComplaint(String complaintId, String agentId) {
+        Optional<Complaint> optionalComplaint = complaintRepository.findById(complaintId);
+        if (optionalComplaint.isEmpty()) {
+            throw new RuntimeException("Complaint not found with id: " + complaintId);
+        }
+
+        Optional<Agent> optionalAgent = agentRepository.findById(agentId);
+        if (optionalAgent.isEmpty()) {
+            throw new RuntimeException("Agent not found with id: " + agentId);
+        }
+
+        Agent agent = optionalAgent.get();
+        agent.setAssignedComplaint(agent.getAssignedComplaint() + 1);
+        agentRepository.save(agent);
+
+        Complaint complaint = optionalComplaint.get();
+        complaint.setAgent(agent);
+        complaint.setAssignedAt(LocalDateTime.now());
+        complaint.setStatus(Status.AGENT_ASSIGNED);
+
+        return complaintRepository.save(complaint);
+    }
+
+    @Override
+    public Complaint discardComplaint(String complaintId) {
+        Optional<Complaint> optionalComplaint = complaintRepository.findById(complaintId);
+        if (optionalComplaint.isEmpty()) {
+            throw new RuntimeException("Complaint not found with id: " + complaintId);
+        }
+
+        Complaint complaint = optionalComplaint.get();
+        complaint.setStatus(Status.DISCARDED);
+        complaint.setCompletedAt(LocalDateTime.now());
+
+        return complaintRepository.save(complaint);
+    }
+
+    @Override
     public void deleteComplaint(String id) {
         if (!complaintRepository.existsById(id)) {
             throw new RuntimeException("Complaint not found with id: " + id);
