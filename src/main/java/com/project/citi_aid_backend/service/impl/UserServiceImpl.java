@@ -4,6 +4,7 @@ import com.project.citi_aid_backend.dto.request.CreateAdminRequest;
 import com.project.citi_aid_backend.dto.request.CreateAgentRequest;
 import com.project.citi_aid_backend.dto.request.CreateCustomerRequest;
 import com.project.citi_aid_backend.dto.response.CustomerProfile;
+import com.project.citi_aid_backend.dto.response.SignupResponse;
 import com.project.citi_aid_backend.enums.Status;
 import com.project.citi_aid_backend.model.Admin;
 import com.project.citi_aid_backend.model.Agent;
@@ -94,14 +95,24 @@ public class UserServiceImpl implements UserService {
 
     // Agent methods
     @Override
-    public Agent createAgent(CreateAgentRequest createAgentRequest) {
+    public SignupResponse createAgent(CreateAgentRequest createAgentRequest) {
+        // Check if agent with same phone number already exists
+        Optional<Agent> existingAgent = agentRepository.findByPhone(createAgentRequest.getPhone());
+        if (existingAgent.isPresent()) {
+            return new SignupResponse(null, null, null, 
+                "Agent with phone number " + createAgentRequest.getPhone() + " already exists", false);
+        }
+
         Agent agent = new Agent();
         agent.setName(createAgentRequest.getName());
         agent.setPhone(createAgentRequest.getPhone());
         agent.setPassword(createAgentRequest.getPassword());
         agent.setDocument(createAgentRequest.getDocument());
         agent.setDepartment(createAgentRequest.getDepartment());
-        return agentRepository.save(agent);
+        Agent savedAgent = agentRepository.save(agent);
+
+        return new SignupResponse(savedAgent.getId(), savedAgent.getName(), 
+            null, "Agent created successfully", true);
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.project.citi_aid_backend.controller;
 
 import com.project.citi_aid_backend.dto.request.CreateComplaintRequest;
 import com.project.citi_aid_backend.dto.request.UpdateComplaintRequest;
+import com.project.citi_aid_backend.dto.response.ComplaintsSummary;
 import com.project.citi_aid_backend.dto.response.DeleteResponse;
 import com.project.citi_aid_backend.model.Complaint;
 import com.project.citi_aid_backend.service.ComplaintService;
@@ -44,6 +45,12 @@ public class ComplaintController {
     public ResponseEntity<List<Complaint>> getAllComplaints() {
         List<Complaint> complaints = complaintService.getAllComplaints();
         return ResponseEntity.ok(complaints);
+    }
+
+    @GetMapping("/summary")
+    public ResponseEntity<ComplaintsSummary> getComplaintsSummary() {
+        ComplaintsSummary summary = complaintService.getComplaintsSummary();
+        return ResponseEntity.ok(summary);
     }
 
     // Read - Get by department

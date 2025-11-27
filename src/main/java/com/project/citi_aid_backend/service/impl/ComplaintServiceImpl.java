@@ -2,6 +2,7 @@ package com.project.citi_aid_backend.service.impl;
 
 import com.project.citi_aid_backend.dto.request.CreateComplaintRequest;
 import com.project.citi_aid_backend.dto.request.UpdateComplaintRequest;
+import com.project.citi_aid_backend.dto.response.ComplaintsSummary;
 import com.project.citi_aid_backend.model.Agent;
 import com.project.citi_aid_backend.model.Complaint;
 import com.project.citi_aid_backend.model.Customer;
@@ -60,6 +61,21 @@ public class ComplaintServiceImpl implements ComplaintService {
     @Override
     public List<Complaint> getAllComplaints() {
         return complaintRepository.findAll();
+    }
+
+    @Override
+    public ComplaintsSummary getComplaintsSummary() {
+        List<Complaint> complaints = complaintRepository.findAll();
+        int openComplaints = (int) complaints.stream().filter(complaint -> complaint.getStatus() == Status.RAISED).count();
+        int assignedComplaints = (int) complaints.stream().filter(complaint -> complaint.getStatus() == Status.AGENT_ASSIGNED).count();
+        int inProgressComplaints = (int) complaints.stream().filter(complaint -> complaint.getStatus() == Status.IN_PROGRESS).count();
+        int fixedComplaints = (int) complaints.stream().filter(complaint -> complaint.getStatus() == Status.FIXED).count();
+        return ComplaintsSummary.builder()
+            .openComplaints(openComplaints)
+            .assignedComplaints(assignedComplaints)
+            .inProgressComplaints(inProgressComplaints)
+            .fixedComplaints(fixedComplaints)
+            .build();
     }
 
     @Override

@@ -4,6 +4,7 @@ import com.project.citi_aid_backend.dto.request.CreateAdminRequest;
 import com.project.citi_aid_backend.dto.request.CreateAgentRequest;
 import com.project.citi_aid_backend.dto.request.CreateCustomerRequest;
 import com.project.citi_aid_backend.dto.response.CustomerProfile;
+import com.project.citi_aid_backend.dto.response.SignupResponse;
 import com.project.citi_aid_backend.model.Admin;
 import com.project.citi_aid_backend.model.Agent;
 import com.project.citi_aid_backend.model.Customer;
@@ -26,7 +27,7 @@ public interface UserService {
     CustomerProfile getCustomerProfile(String customerId);
     
     // Agent methods
-    Agent createAgent(CreateAgentRequest createAgentRequest);
+    SignupResponse createAgent(CreateAgentRequest createAgentRequest);
     Optional<Agent> getAgentByName(String name);
     Optional<Agent> getAgentByPhone(String phone);
     List<Agent> getAllAgents();

@@ -4,6 +4,7 @@ import com.project.citi_aid_backend.dto.request.CreateAdminRequest;
 import com.project.citi_aid_backend.dto.request.CreateAgentRequest;
 import com.project.citi_aid_backend.dto.request.CreateCustomerRequest;
 import com.project.citi_aid_backend.dto.response.CustomerProfile;
+import com.project.citi_aid_backend.dto.response.SignupResponse;
 import com.project.citi_aid_backend.model.Admin;
 import com.project.citi_aid_backend.model.Agent;
 import com.project.citi_aid_backend.model.Customer;
@@ -80,9 +81,14 @@ public class UserController {
 
     // Agent endpoints
     @PostMapping("/agent/create")
-    public ResponseEntity<Agent> createAgent(@Valid @RequestBody CreateAgentRequest createAgentRequest) {
-        Agent agent = userService.createAgent(createAgentRequest);
-        return ResponseEntity.status(200).body(agent);
+    public ResponseEntity<SignupResponse> createAgent(@Valid @RequestBody CreateAgentRequest createAgentRequest) {
+        SignupResponse response = userService.createAgent(createAgentRequest);
+        
+        if (response.isSuccess()) {
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        } else {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+        }
     }
 
     @GetMapping("/agent/name/{name}")

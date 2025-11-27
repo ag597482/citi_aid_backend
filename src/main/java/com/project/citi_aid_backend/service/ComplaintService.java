@@ -2,6 +2,7 @@ package com.project.citi_aid_backend.service;
 
 import com.project.citi_aid_backend.dto.request.CreateComplaintRequest;
 import com.project.citi_aid_backend.dto.request.UpdateComplaintRequest;
+import com.project.citi_aid_backend.dto.response.ComplaintsSummary;
 import com.project.citi_aid_backend.model.Complaint;
 import com.project.citi_aid_backend.enums.Department;
 import com.project.citi_aid_backend.enums.Severity;
@@ -17,6 +18,7 @@ public interface ComplaintService {
     // Read
     Optional<Complaint> getComplaintById(String id);
     List<Complaint> getAllComplaints();
+    ComplaintsSummary getComplaintsSummary();
     List<Complaint> getComplaintsByDepartment(Department department);
     List<Complaint> getComplaintsBySeverity(Severity severity);
     List<Complaint> getComplaintsByStatus(Status status);
