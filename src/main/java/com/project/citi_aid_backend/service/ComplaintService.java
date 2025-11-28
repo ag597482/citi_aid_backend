@@ -1,5 +1,6 @@
 package com.project.citi_aid_backend.service;
 
+import com.project.citi_aid_backend.dto.request.CloseComplaintRequest;
 import com.project.citi_aid_backend.dto.request.CreateComplaintRequest;
 import com.project.citi_aid_backend.dto.request.UpdateComplaintRequest;
 import com.project.citi_aid_backend.dto.response.ComplaintsSummary;
@@ -29,6 +30,8 @@ public interface ComplaintService {
     Complaint updateComplaint(String id, UpdateComplaintRequest updateComplaintRequest);
     Complaint assignAgentToComplaint(String complaintId, String agentId);
     Complaint discardComplaint(String complaintId);
+    Complaint startProgress(String complaintId);
+    Complaint closeComplaint(String complaintId, CloseComplaintRequest closeComplaintRequest);
     
     // Delete
     void deleteComplaint(String id);

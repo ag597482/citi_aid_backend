@@ -3,6 +3,8 @@ package com.project.citi_aid_backend.controller;
 import com.project.citi_aid_backend.dto.request.CreateAdminRequest;
 import com.project.citi_aid_backend.dto.request.CreateAgentRequest;
 import com.project.citi_aid_backend.dto.request.CreateCustomerRequest;
+import com.project.citi_aid_backend.dto.request.UpdateAgentRequest;
+import com.project.citi_aid_backend.dto.response.AgentProfile;
 import com.project.citi_aid_backend.dto.response.CustomerProfile;
 import com.project.citi_aid_backend.dto.response.SignupResponse;
 import com.project.citi_aid_backend.model.Admin;
@@ -115,6 +117,18 @@ public class UserController {
     public ResponseEntity<List<Agent>> getAgentsByDepartment(@PathVariable Department department) {
         List<Agent> agents = userService.getAgentsByDepartment(department);
         return ResponseEntity.ok(agents);
+    }
+
+    @GetMapping("/agent/profile/{agentId}")
+    public ResponseEntity<AgentProfile> getAgentProfile(@PathVariable String agentId) {
+        AgentProfile agentProfile = userService.getAgentProfile(agentId);
+        return ResponseEntity.status(200).body(agentProfile);
+    }
+
+    @PutMapping("/agent/update/{agentId}")
+    public ResponseEntity<Agent> updateAgent(@PathVariable String agentId, @Valid @RequestBody UpdateAgentRequest updateAgentRequest) {
+        Agent updatedAgent = userService.updateAgent(agentId, updateAgentRequest);
+        return ResponseEntity.status(200).body(updatedAgent);
     }
 
 }

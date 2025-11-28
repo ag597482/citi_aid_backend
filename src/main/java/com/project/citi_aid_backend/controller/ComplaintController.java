@@ -1,5 +1,6 @@
 package com.project.citi_aid_backend.controller;
 
+import com.project.citi_aid_backend.dto.request.CloseComplaintRequest;
 import com.project.citi_aid_backend.dto.request.CreateComplaintRequest;
 import com.project.citi_aid_backend.dto.request.UpdateComplaintRequest;
 import com.project.citi_aid_backend.dto.response.ComplaintsSummary;
@@ -122,6 +123,30 @@ public class ComplaintController {
             return ResponseEntity.ok(complaint);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
+    // Start Progress - Update status to IN_PROGRESS if in AGENT_ASSIGNED stage
+    @PutMapping("/{complaintId}/start-progress")
+    public ResponseEntity<Complaint> startProgress(@PathVariable String complaintId) {
+        try {
+            Complaint complaint = complaintService.startProgress(complaintId);
+            return ResponseEntity.ok(complaint);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+    }
+
+    // Close Complaint - Update afterPhoto, completedAt, and status to FIXED
+    @PutMapping("/{complaintId}/close")
+    public ResponseEntity<Complaint> closeComplaint(
+            @PathVariable String complaintId,
+            @Valid @RequestBody CloseComplaintRequest closeComplaintRequest) {
+        try {
+            Complaint complaint = complaintService.closeComplaint(complaintId, closeComplaintRequest);
+            return ResponseEntity.ok(complaint);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
     }
 

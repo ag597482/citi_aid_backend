@@ -3,6 +3,8 @@ package com.project.citi_aid_backend.service.impl;
 import com.project.citi_aid_backend.dto.request.CreateAdminRequest;
 import com.project.citi_aid_backend.dto.request.CreateAgentRequest;
 import com.project.citi_aid_backend.dto.request.CreateCustomerRequest;
+import com.project.citi_aid_backend.dto.request.UpdateAgentRequest;
+import com.project.citi_aid_backend.dto.response.AgentProfile;
 import com.project.citi_aid_backend.dto.response.CustomerProfile;
 import com.project.citi_aid_backend.dto.response.SignupResponse;
 import com.project.citi_aid_backend.enums.Status;
@@ -133,6 +135,33 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<Agent> getAgentsByDepartment(Department department) {
         return agentRepository.findByDepartment(department);
+    }
+
+    @Override
+    public AgentProfile getAgentProfile(String agentId) {
+        Agent agent = agentRepository.findById(agentId).get();
+        List<Complaint> agentComplaints = complaintService.getComplaintsByAgentId(agentId);
+        AgentProfile agentProfile = new AgentProfile();
+        agentProfile.setAgent(agent);
+        agentProfile.setActiveComplaints(agentComplaints.stream().filter(complaint -> !complaint.getStatus().equals(Status.FIXED)).toList());
+        agentProfile.setClosedComplaints(agentComplaints.stream().filter(complaint -> complaint.getStatus().equals(Status.FIXED)).toList());
+        return agentProfile;
+    }
+
+    @Override
+    public Agent updateAgent(String agentId, UpdateAgentRequest updateAgentRequest) {
+        Agent agent = agentRepository.findById(agentId)
+                .orElseThrow(() -> new RuntimeException("Agent not found with id: " + agentId));
+        
+        if (updateAgentRequest.getPassword() != null && !updateAgentRequest.getPassword().isEmpty()) {
+            agent.setPassword(updateAgentRequest.getPassword());
+        }
+        
+        if (updateAgentRequest.getProfilePhotoUrl() != null) {
+            agent.setProfilePhotoUrl(updateAgentRequest.getProfilePhotoUrl());
+        }
+        
+        return agentRepository.save(agent);
     }
 }
 

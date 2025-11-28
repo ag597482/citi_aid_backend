@@ -1,5 +1,6 @@
 package com.project.citi_aid_backend.service.impl;
 
+import com.project.citi_aid_backend.dto.request.CloseComplaintRequest;
 import com.project.citi_aid_backend.dto.request.CreateComplaintRequest;
 import com.project.citi_aid_backend.dto.request.UpdateComplaintRequest;
 import com.project.citi_aid_backend.dto.response.ComplaintsSummary;
@@ -198,6 +199,77 @@ public class ComplaintServiceImpl implements ComplaintService {
         complaint.setCompletedAt(LocalDateTime.now());
 
         return complaintRepository.save(complaint);
+    }
+
+    @Override
+    public Complaint startProgress(String complaintId) {
+        Optional<Complaint> optionalComplaint = complaintRepository.findById(complaintId);
+        if (optionalComplaint.isEmpty()) {
+            throw new RuntimeException("Complaint not found with id: " + complaintId);
+        }
+
+        Complaint complaint = optionalComplaint.get();
+        
+        // Check if complaint is in AGENT_ASSIGNED status
+        if (complaint.getStatus() != Status.AGENT_ASSIGNED) {
+            throw new RuntimeException("Complaint must be in AGENT_ASSIGNED status to start progress. Current status: " + complaint.getStatus());
+        }
+
+        // Check if agent is assigned
+        if (complaint.getAgent() == null) {
+            throw new RuntimeException("No agent assigned to this complaint");
+        }
+
+        // Update complaint status to IN_PROGRESS
+        complaint.setStatus(Status.IN_PROGRESS);
+        complaint = complaintRepository.save(complaint);
+
+        // Update agent's complaintsInProgress count
+        Agent agent = complaint.getAgent();
+        agent.setComplaintsInProgress(agent.getComplaintsInProgress() + 1);
+        agent.setAssignedComplaint(agent.getAssignedComplaint()-1);
+        agentRepository.save(agent);
+
+        return complaint;
+    }
+
+    @Override
+    public Complaint closeComplaint(String complaintId, CloseComplaintRequest closeComplaintRequest) {
+        Optional<Complaint> optionalComplaint = complaintRepository.findById(complaintId);
+        if (optionalComplaint.isEmpty()) {
+            throw new RuntimeException("Complaint not found with id: " + complaintId);
+        }
+        Complaint complaint = optionalComplaint.get();
+
+        // Check if complaint is in AGENT_ASSIGNED status
+        if (complaint.getStatus() != Status.IN_PROGRESS) {
+            throw new RuntimeException("Complaint must be in IN_PROGRESS status to mark complete. Current status: " + complaint.getStatus());
+        }
+
+        // Check if agent is assigned
+        if (complaint.getAgent() == null) {
+            throw new RuntimeException("No agent assigned to this complaint");
+        }
+
+        // Store previous status before updating
+        Status previousStatus = complaint.getStatus();
+
+        // Update complaint
+        if (closeComplaintRequest.getAfterPhotoUrl() != null) {
+            complaint.setAfterPhoto(closeComplaintRequest.getAfterPhotoUrl());
+        }
+        complaint.setStatus(Status.FIXED);
+        complaint.setCompletedAt(LocalDateTime.now());
+        complaint = complaintRepository.save(complaint);
+
+        // Update agent's counts
+        Agent agent = complaint.getAgent();
+        agent.setClosedComplaints(agent.getClosedComplaints() + 1);
+        agent.setComplaintsInProgress(agent.getComplaintsInProgress()-1);
+        
+        agentRepository.save(agent);
+
+        return complaint;
     }
 
     @Override

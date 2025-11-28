@@ -3,6 +3,8 @@ package com.project.citi_aid_backend.service;
 import com.project.citi_aid_backend.dto.request.CreateAdminRequest;
 import com.project.citi_aid_backend.dto.request.CreateAgentRequest;
 import com.project.citi_aid_backend.dto.request.CreateCustomerRequest;
+import com.project.citi_aid_backend.dto.request.UpdateAgentRequest;
+import com.project.citi_aid_backend.dto.response.AgentProfile;
 import com.project.citi_aid_backend.dto.response.CustomerProfile;
 import com.project.citi_aid_backend.dto.response.SignupResponse;
 import com.project.citi_aid_backend.model.Admin;
@@ -32,4 +34,6 @@ public interface UserService {
     Optional<Agent> getAgentByPhone(String phone);
     List<Agent> getAllAgents();
     List<Agent> getAgentsByDepartment(Department department);
+    AgentProfile getAgentProfile(String agentId);
+    Agent updateAgent(String agentId, UpdateAgentRequest updateAgentRequest);
 }
