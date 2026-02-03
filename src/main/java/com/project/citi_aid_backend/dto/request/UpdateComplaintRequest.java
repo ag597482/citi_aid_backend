@@ -16,5 +16,7 @@ public class UpdateComplaintRequest {
     private Severity severity;
     private Status status;
     private String agentId; // ID of the agent to assign
+    private Boolean crowdFundingEnabled;
+    private Integer targetFund;
 }
 

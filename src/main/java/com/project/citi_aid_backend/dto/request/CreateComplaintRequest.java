@@ -28,5 +28,8 @@ public class CreateComplaintRequest {
 
     @NotBlank(message = "Customer ID is required")
     private String customerId;
+
+    private Boolean crowdFundingEnabled;
+    private Integer targetFund;
 }
 

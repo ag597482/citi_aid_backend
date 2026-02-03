@@ -7,10 +7,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import com.project.citi_aid_backend.dto.response.ContributorResponse;
 
 @Data
 @AllArgsConstructor
@@ -38,5 +41,14 @@ public class Complaint {
     private LocalDateTime createdAt;
     private LocalDateTime assignedAt;
     private LocalDateTime completedAt;
+    
+    private boolean crowdFundingEnabled = false;
+    private Integer targetFund;
+    
+    @Transient
+    private int fundCollected = 0;
+    
+    @Transient
+    private List<ContributorResponse> contributors;
 }
 

@@ -11,6 +11,7 @@ import com.project.citi_aid_backend.repository.AgentRepository;
 import com.project.citi_aid_backend.repository.ComplaintRepository;
 import com.project.citi_aid_backend.repository.CustomerRepository;
 import com.project.citi_aid_backend.service.ComplaintService;
+import com.project.citi_aid_backend.service.ContributionService;
 import com.project.citi_aid_backend.enums.Department;
 import com.project.citi_aid_backend.enums.Severity;
 import com.project.citi_aid_backend.enums.Status;
@@ -33,6 +34,9 @@ public class ComplaintServiceImpl implements ComplaintService {
     @Autowired
     private CustomerRepository customerRepository;
 
+    @Autowired
+    private ContributionService contributionService;
+
     @Override
     public Complaint createComplaint(CreateComplaintRequest createComplaintRequest) {
         // Find the customer who created the complaint
@@ -51,17 +55,32 @@ public class ComplaintServiceImpl implements ComplaintService {
         complaint.setStatus(Status.RAISED);
         complaint.setCustomer(customerOpt.get());
         complaint.setCreatedAt(LocalDateTime.now());
-        return complaintRepository.save(complaint);
+        
+        // Handle crowdfunding fields
+        if (createComplaintRequest.getCrowdFundingEnabled() != null) {
+            complaint.setCrowdFundingEnabled(createComplaintRequest.getCrowdFundingEnabled());
+        }
+        if (createComplaintRequest.getTargetFund() != null) {
+            complaint.setTargetFund(createComplaintRequest.getTargetFund());
+        }
+        
+        complaint = complaintRepository.save(complaint);
+        populateCrowdfundingFields(complaint);
+        return complaint;
     }
 
     @Override
     public Optional<Complaint> getComplaintById(String id) {
-        return complaintRepository.findById(id);
+        Optional<Complaint> complaintOpt = complaintRepository.findById(id);
+        complaintOpt.ifPresent(this::populateCrowdfundingFields);
+        return complaintOpt;
     }
 
     @Override
     public List<Complaint> getAllComplaints() {
-        return complaintRepository.findAll();
+        List<Complaint> complaints = complaintRepository.findAll();
+        complaints.forEach(this::populateCrowdfundingFields);
+        return complaints;
     }
 
     @Override
@@ -81,27 +100,37 @@ public class ComplaintServiceImpl implements ComplaintService {
 
     @Override
     public List<Complaint> getComplaintsByDepartment(Department department) {
-        return complaintRepository.findByDepartment(department);
+        List<Complaint> complaints = complaintRepository.findByDepartment(department);
+        complaints.forEach(this::populateCrowdfundingFields);
+        return complaints;
     }
 
     @Override
     public List<Complaint> getComplaintsBySeverity(Severity severity) {
-        return complaintRepository.findBySeverity(severity);
+        List<Complaint> complaints = complaintRepository.findBySeverity(severity);
+        complaints.forEach(this::populateCrowdfundingFields);
+        return complaints;
     }
 
     @Override
     public List<Complaint> getComplaintsByStatus(Status status) {
-        return complaintRepository.findByStatus(status);
+        List<Complaint> complaints = complaintRepository.findByStatus(status);
+        complaints.forEach(this::populateCrowdfundingFields);
+        return complaints;
     }
 
     @Override
     public List<Complaint> getComplaintsByAgentId(String agentId) {
-        return complaintRepository.findByAgentId(agentId);
+        List<Complaint> complaints = complaintRepository.findByAgentId(agentId);
+        complaints.forEach(this::populateCrowdfundingFields);
+        return complaints;
     }
 
     @Override
     public List<Complaint> getComplaintsByCustomerId(String customerId) {
-        return complaintRepository.findByCustomerId(customerId);
+        List<Complaint> complaints = complaintRepository.findByCustomerId(customerId);
+        complaints.forEach(this::populateCrowdfundingFields);
+        return complaints;
     }
 
     @Override
@@ -159,8 +188,16 @@ public class ComplaintServiceImpl implements ComplaintService {
                 throw new RuntimeException("Agent not found with id: " + updateComplaintRequest.getAgentId());
             }
         }
+        if (updateComplaintRequest.getCrowdFundingEnabled() != null) {
+            complaint.setCrowdFundingEnabled(updateComplaintRequest.getCrowdFundingEnabled());
+        }
+        if (updateComplaintRequest.getTargetFund() != null) {
+            complaint.setTargetFund(updateComplaintRequest.getTargetFund());
+        }
 
-        return complaintRepository.save(complaint);
+        complaint = complaintRepository.save(complaint);
+        populateCrowdfundingFields(complaint);
+        return complaint;
     }
 
     @Override
@@ -184,7 +221,9 @@ public class ComplaintServiceImpl implements ComplaintService {
         complaint.setAssignedAt(LocalDateTime.now());
         complaint.setStatus(Status.AGENT_ASSIGNED);
 
-        return complaintRepository.save(complaint);
+        complaint = complaintRepository.save(complaint);
+        populateCrowdfundingFields(complaint);
+        return complaint;
     }
 
     @Override
@@ -198,7 +237,9 @@ public class ComplaintServiceImpl implements ComplaintService {
         complaint.setStatus(Status.DISCARDED);
         complaint.setCompletedAt(LocalDateTime.now());
 
-        return complaintRepository.save(complaint);
+        complaint = complaintRepository.save(complaint);
+        populateCrowdfundingFields(complaint);
+        return complaint;
     }
 
     @Override
@@ -230,6 +271,7 @@ public class ComplaintServiceImpl implements ComplaintService {
         agent.setAssignedComplaint(agent.getAssignedComplaint()-1);
         agentRepository.save(agent);
 
+        populateCrowdfundingFields(complaint);
         return complaint;
     }
 
@@ -251,9 +293,6 @@ public class ComplaintServiceImpl implements ComplaintService {
             throw new RuntimeException("No agent assigned to this complaint");
         }
 
-        // Store previous status before updating
-        Status previousStatus = complaint.getStatus();
-
         // Update complaint
         if (closeComplaintRequest.getAfterPhotoUrl() != null) {
             complaint.setAfterPhoto(closeComplaintRequest.getAfterPhotoUrl());
@@ -269,6 +308,7 @@ public class ComplaintServiceImpl implements ComplaintService {
         
         agentRepository.save(agent);
 
+        populateCrowdfundingFields(complaint);
         return complaint;
     }
 
@@ -278,6 +318,12 @@ public class ComplaintServiceImpl implements ComplaintService {
             throw new RuntimeException("Complaint not found with id: " + id);
         }
         complaintRepository.deleteById(id);
+    }
+
+    // Helper method to populate crowdfunding fields in Complaint
+    private void populateCrowdfundingFields(Complaint complaint) {
+        complaint.setFundCollected(contributionService.calculateFundCollected(complaint.getId()));
+        complaint.setContributors(contributionService.getContributorsForComplaint(complaint.getId()));
     }
 }
 
